@@ -6,6 +6,7 @@ from abc import abstractmethod
 
 from . import utils
 from .intent import Intent
+from .device import LLAMA
 
 POSSIBLE_KEYS = [
     "BACK",
@@ -436,7 +437,10 @@ class UIEvent(InputEvent):
         if x and y:
             return x, y
         if view:
-            from .device_state import DeviceState
+            if LLAMA:
+                from .device_state_llama import DeviceState
+            else:
+                from .device_state import DeviceState
             return DeviceState.get_view_center(view_dict=view)
         return x, y
 
@@ -656,7 +660,10 @@ class ScrollEvent(UIEvent):
 
     def send(self, device):
         if self.view is not None:
-            from .device_state import DeviceState
+            if LLAMA:
+                from .device_state_llama import DeviceState
+            else:
+                from .device_state import DeviceState
             width = DeviceState.get_view_width(view_dict=self.view)
             height = DeviceState.get_view_height(view_dict=self.view)
         else:

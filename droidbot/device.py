@@ -18,6 +18,7 @@ from .intent import Intent
 
 DEFAULT_NUM = '1234567890'
 DEFAULT_CONTENT = 'Hello world!'
+LLAMA = True
 
 
 class Device(object):
@@ -816,7 +817,10 @@ class Device(object):
             background_services = self.get_service_names()
             screenshot_path = self.take_screenshot()
             self.logger.debug("finish getting current device state...")
-            from .device_state import DeviceState
+            if LLAMA:
+                from .device_state_llama import DeviceState
+            else:
+                from .device_state import DeviceState
             current_state = DeviceState(self,
                                         views=views,
                                         foreground_activity=foreground_activity,
