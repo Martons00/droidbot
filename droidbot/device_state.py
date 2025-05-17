@@ -5,6 +5,8 @@ import os
 from .utils import md5
 from .input_event import TouchEvent, LongTouchEvent, ScrollEvent, SetTextEvent, KeyEvent
 
+solo_text = False
+
 
 class DeviceState(object):
     """
@@ -407,6 +409,7 @@ class DeviceState(object):
         Get a list of possible input events for this state
         :return: list of InputEvent
         """
+        text = False
         if self.possible_events:
             return [] + self.possible_events
         possible_events = []
@@ -447,6 +450,9 @@ class DeviceState(object):
 
         for view_id in enabled_view_ids:
             if self.__safe_dict_get(self.views[view_id], 'editable'):
+                if solo_text:
+                    text = True
+                event = SetTextEvent(view=self.views[view_id], text="Hello World")
                 possible_events.append(SetTextEvent(view=self.views[view_id], text="Hello World"))
                 touch_exclude_view_ids.add(view_id)
                 # TODO figure out what event can be sent to editable views
@@ -462,7 +468,10 @@ class DeviceState(object):
 
         # For old Android navigation bars
         # possible_events.append(KeyEvent(name="MENU"))
-
+        
+        if text:
+            possible_events = [event]
+            print("Text input event is available")
         self.possible_events = possible_events
         return [] + possible_events
 
@@ -532,6 +541,7 @@ class DeviceState(object):
                 if merge_buttons:
                     # below is to merge buttons, led to bugs
                     clickable_ancestor_id = self._get_ancestor_id(view=view, key='clickable')
+                    print(clickable_ancestor_id)
                     if not clickable_ancestor_id:
                         clickable_ancestor_id = self._get_ancestor_id(view=view, key='checkable')
                     clickable_children_ids = self._extract_all_children(id=clickable_ancestor_id)

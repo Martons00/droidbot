@@ -5,11 +5,68 @@ import os
 from .utils import md5
 from .input_event import TouchEvent, LongTouchEvent, ScrollEvent, SetTextEvent, KeyEvent
 
+import requests
+import json
+
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from huggingface_hub import login
 import torch
 
+solo_text = False
 
+#droidbot -a C:\Users\juve2\StudioProjects\PassAndroid\android\build\intermediates\apk\noMapsNoAnalyticsForFDroid\debug\PassAndroid-3.7.3-noMaps-noAnalytics-forFDroid-debug.apk -o output-pass-llama -is_emulator -accessibility_auto -timeout 10800
+#droidbot -a C:\Users\juve2\StudioProjects\Omni-Notes\omniNotes\build\intermediates\apk\alpha\debug\OmniNotes-alphaDebug-6.4.0.apk  -o output-note-llama -is_emulator -accessibility_auto -timeout 10800
+#droidbot -a C:\Users\juve2\StudioProjects\thunderbird-android\app-k9mail\build\outputs\apk\foss\debug\app-k9mail-foss-debug.apk  -o output-tfa-llama -is_emulator -accessibility_auto -timeout 10800
+
+# Load the tokenizer and model
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("Device: ",device)
+
+model_id = "meta-llama/Llama-3.2-1B-Instruct"
+#model_id = "meta-llama/Llama-3.2-3B-Instruct"
+model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float16, device_map=device)
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+
+
+
+
+#we define a method to ask any prompt to llama
+def ask_llama_local(prompt, maxl=600, temp=0.7):
+    """
+    Send a prompt to the Llama model and get a response.
+
+    Args:
+    - prompt (str): The input question or statement to the model.
+    - max_length (int): The maximum length of the response.
+    - temperature (float): Controls randomness in the model's output.
+
+    Returns:
+    - str: The model's generated response.
+    """
+    # Tokenize the prompt
+    inputs = tokenizer(prompt, return_tensors="pt")
+    print("Lughezza input" ,len(inputs['input_ids'][0]))
+    maxl = len(inputs['input_ids'][0]) + 5
+    print("maxl: ", maxl)
+
+    inputs.to(device)
+
+    # Generate the output
+    outputs = model.generate(
+        inputs['input_ids'],  # Tokenized input
+        temperature=temp,        # Lower temperature to reduce randomness
+        do_sample=True,        # Disable sampling for deterministic output
+        pad_token_id=tokenizer.eos_token_id  # Ensure the model doesn't go beyond the end token
+    )
+
+    # Decode and return the response
+    return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+
+print("Llama model loaded successfully!")
+print("Test the model with a sample prompt:")
+prompt = "What is the capital of France?"
+response = ask_llama_local(prompt)
+print("Response from Llama model:", response)
 
 
 
@@ -40,13 +97,6 @@ class DeviceState(object):
         self.possible_events = None
         self.width = device.get_width(refresh=True)
         self.height = device.get_height(refresh=False)
-        # Load the tokenizer and model
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-        model_id = "meta-llama/Llama-3.2-3B"
-        self.model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float16, device_map="auto")
-        self.tokenizer = AutoTokenizer.from_pretrained(model_id)
-        self.model = self.model.to(device)
 
     @property
     def activity_short_name(self):
@@ -63,95 +113,6 @@ class DeviceState(object):
                  'height': self.height,
                  'views': self.views}
         return state
-    
-    #we define a method to ask any prompt to llama
-    def ask_llama(self,view, maxl=200, temp=0.7):
-        full_view_representation = self.get_text_representation(merge_buttons=True)[0]
-
-        # Generate a brief description of the current element based on available attributes
-        view_text = self.__safe_dict_get(view, 'text', default='').strip()
-        content_description = self.__safe_dict_get(view, 'content_description', default='').strip()
-        view_class = self.__safe_dict_get(view, 'class', default='').split('.')[-1]
-        allowed_actions = view.get('allowed_actions', [])
-
-        # Build a readable summary for the current view
-        view_details = (
-            f"Current Element:\n"
-            f"  - Class: {view_class}\n"
-            f"  - Text: {view_text if view_text else 'N/A'}\n"
-            f"  - Description: {content_description if content_description else 'N/A'}\n"
-            f"  - Allowed Actions: {', '.join(allowed_actions) if allowed_actions else 'N/A'}\n"
-        )
-
-        # Construct a structured prompt that incorporates both the global UI representation 
-        # and the details of the active view
-        prompt = (
-            f"""<s>[INST] <<SYS>>
-        You are a helpful assistant designed to generate context-aware text inputs for UI elements. 
-        Analyze the interface structure, element properties, and existing content to suggest realistic values.
-        <</SYS>>
-
-        ### Task Description:
-        1. Given the current UI state and a focus element (marked as editable):
-        2. Suggest a text input that matches the element's context.
-        3. Follow these guidelines:
-        - Use actual data formats (emails, names, numbers) when detectable
-        - Mirror the style of existing content when applicable
-        - Prioritize content descriptions over placeholder texts
-        - Keep inputs minimal but meaningful
-
-        ### Few-Shot Examples:
-
-        Example 1:
-        [UI Representation]
-        <input id=0 text='Email address' bound_box=10,50,310,100>Enter email</input>
-
-        [Suggested Input]
-        john.doe@example.com
-
-        Example 2: 
-        [UI Representation]
-        <input id=1 text='Search bar' bound_box=20,100,300,150>Search products...</input>
-        <button id=2 text='Search' bound_box=320,100,620,150></button>
-
-        [Suggested Input]
-        wireless headphones
-
-        Example 3:
-        [UI Representation]
-        <input id=0 text='Cardholder name' bound_box=10,200,310,250></input>
-        <input id=1 text='Card number' bound_box=10,260,310,310></input>
-
-        [Suggested Input]
-        Maria Gonzalez
-        4111-1111-1111-1111
-
-        ### Current Interface:
-        {full_view_representation}
-
-        ### Focus Element Details:
-        {view_details}
-
-        ### Instruction:
-        Based on the above context, suggest appropriate text for the focus element. 
-        Provide only the raw text input without explanations. [/INST]"""
-        )
-
-
-        inputs = self.tokenizer(prompt, return_tensors="pt")
-
-        inputs.to(self.device)
-
-        outputs = self.model.generate(
-            inputs['input_ids'],  # Tokenized input
-            max_length=maxl,         # Limit response length to avoid extra text
-            temperature=temp,        # Lower temperature to reduce randomness
-            do_sample=True,        # Disable sampling for deterministic output
-            pad_token_id=self.tokenizer.eos_token_id  # Ensure the model doesn't go beyond the end token
-        )
-
-        # Decode and return the response
-        return self.tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
 
     def to_json(self):
         import json
@@ -510,8 +471,7 @@ class DeviceState(object):
         Get a list of possible input events for this state
         :return: list of InputEvent
         """
-        if self.possible_events:
-            return [] + self.possible_events
+        text = False
         possible_events = []
         enabled_view_ids = []
         touch_exclude_view_ids = set()
@@ -550,7 +510,13 @@ class DeviceState(object):
 
         for view_id in enabled_view_ids:
             if self.__safe_dict_get(self.views[view_id], 'editable'):
-                text_to_set = self.ask_llama(view=self.views[view_id])
+                if solo_text:
+                    text = True
+                full_view_representation = self.text_representation[0]
+                text_to_set = self.ask_llama(view=self.views[view_id], full_view_representation=full_view_representation)
+                print("text_to_set: ", text_to_set)
+                event = SetTextEvent(view=self.views[view_id], text=text_to_set)
+                #text_to_set = "HelloWorld"  # TODO: replace with actual text generation
                 possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
                 touch_exclude_view_ids.add(view_id)
                 # TODO figure out what event can be sent to editable views
@@ -566,10 +532,43 @@ class DeviceState(object):
 
         # For old Android navigation bars
         # possible_events.append(KeyEvent(name="MENU"))
-
+        
+        if text:
+            possible_events = [event]
+            print("Text input event is available")
+            print("Possible events: ", possible_events)
         self.possible_events = possible_events
         return [] + possible_events
+    
+    def _get_ancestor_id(self, view, key):
+        """
+        Ritorna l'id dell'antenato più vicino che soddisfa view[key]==True,
+        o -1 se non ne esistono.
+        """
+        curr_id = view['temp_id']
+        # scorre verso l'alto finché non trova il flag
+        while curr_id != -1:
+            v = self.views[curr_id]
+            if v.get(key):
+                return curr_id
+            curr_id = v.get('parent', -1)
+        return -1
 
+    def _extract_all_children(self, id):
+        """
+        Estrae ricorsivamente tutti gli id dei figli di una view.
+        """
+        result = set()
+        to_visit = [id]
+        while to_visit:
+            vid = to_visit.pop()
+            children = self.views[vid].get('children', [])
+            for c in children:
+                if c not in result:
+                    result.add(c)
+                    to_visit.append(c)
+        return result
+    
     def get_text_representation(self, merge_buttons=False):
         """
         Get a text representation of current state
@@ -588,6 +587,7 @@ class DeviceState(object):
         checkbox_frame = "<checkbox id=@ text='&' attr=null bounds=null>#</checkbox>"
         input_frame = "<input id=@ text='&' attr=null bounds=null>#</input>"
         scroll_frame = "<scrollbar id=@ attr=null bounds=null></scrollbar>"
+        
 
         view_descs = []
         indexed_views = []
@@ -707,6 +707,8 @@ class DeviceState(object):
             if value:
                 return value
         return default
+    
+
 
     def _merge_text(self, children_ids):
         texts, content_descriptions = [], []
@@ -715,7 +717,7 @@ class DeviceState(object):
                 self.__safe_dict_get(self.views[childid], 'resource_id') in \
                ['android:id/navigationBarBackground',
                 'android:id/statusBarBackground']:
-                # if the successor is not visible, then ignore it!
+                # if the successor is not visible, then ignore it!get
                 continue          
 
             text = self.__safe_dict_get(self.views[childid], 'text', default='')
@@ -736,4 +738,178 @@ class DeviceState(object):
         merged_text = '<br>'.join(texts) if len(texts) > 0 else ''
         merged_desc = '<br>'.join(content_descriptions) if len(content_descriptions) > 0 else ''
         return merged_text, merged_desc
+    
+        
+    #we define a method to ask any prompt to llama
+    def ask_llama(self,view, maxl=200, temp=0.7, full_view_representation=None):
+        rappresentation = ""
+        for line in full_view_representation.split('\n'):
+            type = line.split('<')[1].split(' ')[0]
+            line = line.split('>')[1].split('<')[0]
+            if len(line) > 0:
+                rappresentation += f"<{type}>" + line + "</" + type + ">\n"
+        full_view_representation = rappresentation
+        # Generate a brief description of the current element based on available attributes
+        view_text = self.__safe_dict_get(view, 'text', default='').strip()
+        content_description = self.__safe_dict_get(view, 'content_description', default='').strip()
+        view_class = self.__safe_dict_get(view, 'class', default='').split('.')[-1]
+
+        # Build a readable summary for the current view
+        view_details = (
+            f"Current Element:\n"
+            f"  - Class: {view_class}\n"
+            f"  - Text: {view_text if view_text else 'N/A'}\n"
+            f"  - Description: {content_description if content_description else 'N/A'}\n"
+        )
+
+        # Construct a structured prompt that incorporates both the global UI representation 
+        # and the details of the active view
+        prompt = (
+                f"<s>[INST] <<SYS>>"
+                "You are an assistant that generates only a realistic, context-appropriate text input for a UI element. "
+                "Respond with a single word of plain text, no explanations, no formatting, no extra symbols."
+                "<</SYS>>\n\n"
+                "### Few-Shot Examples:\n\n"
+                "Example 1:\n"
+                "[UI Representation]\n"
+                "<input id=0 text='Email address' bound_box=10,50,310,100>Enter email</input>\n"
+                "Output:\n"
+                "john.doe@example.com\n\n"
+                "Example 2:\n"
+                "[UI Representation]\n"
+                "<input id=1 text='Search bar' bound_box=20,100,300,150>Search products...</input>\n"
+                "<button id=2 text='Search' bound_box=320,100,620,150></button>\n"
+                "Output:\n"
+                "wireless headphones\n\n"
+                "UI Snapshot:\n"
+                f"{full_view_representation}\n\n"
+                "Focused Element Details:\n"
+                f"{view_details}\n\n"
+                "Now, based on the UI Snapshot and Focused Element Details, provide only the appropriate text for the focused element."
+                "[/INST]\n"
+                "OUTPUT: "
+            )
+
+        
+        print("Prompt sent to Llama:")
+        print(prompt)
+        
+        response = ask_llama_local(prompt=prompt, temp=temp)
+        response = response.split('OUTPUT:')[1].strip().replace('\n', ' ')
+        if len(response) > 15:
+            response = response[:15]
+        if response:
+            print("Response received:")
+            print(response)
+            print("Response text:")
+            print(response.strip())
+        else:
+            print("Error: No response received from Llama.")
+            return None
+        # Decode and return the response
+        return response.strip()
+
+def ask_llama_API(self,view, maxl=200, temp=0.7, full_view_representation=None):
+
+        # Generate a brief description of the current element based on available attributes
+        view_text = self.__safe_dict_get(view, 'text', default='').strip()
+        content_description = self.__safe_dict_get(view, 'content_description', default='').strip()
+        view_class = self.__safe_dict_get(view, 'class', default='').split('.')[-1]
+        allowed_actions = view.get('allowed_actions', [])
+
+        # Build a readable summary for the current view
+        view_details = (
+            f"Current Element:\n"
+            f"  - Class: {view_class}\n"
+            f"  - Text: {view_text if view_text else 'N/A'}\n"
+            f"  - Description: {content_description if content_description else 'N/A'}\n"
+            f"  - Allowed Actions: {', '.join(allowed_actions) if allowed_actions else 'N/A'}\n"
+        )
+
+        # Construct a structured prompt that incorporates both the global UI representation 
+        # and the details of the active view
+        prompt = (
+            f"""<s>[INST] <<SYS>>
+        You are a helpful assistant designed to generate context-aware text inputs for UI elements. 
+        Analyze the interface structure, element properties, and existing content to suggest realistic values.
+        <</SYS>>
+
+        ### Task Description:
+        1. Given the current UI state and a focus element (marked as editable):
+        2. Suggest a text input that matches the element's context.
+        3. The output MUST be few words, without any additional explanations or formatting or simbols.
+        4. The output MUST be a single line of text.
+        5. The output MUST be different from previus texts.
+        5. Follow these guidelines:
+        - Use actual data formats (emails, names, numbers) when detectable
+        - Mirror the style of existing content when applicable
+        - Prioritize content descriptions over placeholder texts
+        - Keep inputs minimal but meaningful
+
+        ### Few-Shot Examples:
+
+        Example 1:
+        [UI Representation]
+        <input id=0 text='Email address' bound_box=10,50,310,100>Enter email</input>
+
+        Output:
+        john.doe@example.com
+
+        Example 2: 
+        [UI Representation]
+        <input id=1 text='Search bar' bound_box=20,100,300,150>Search products...</input>
+        <button id=2 text='Search' bound_box=320,100,620,150></button>
+
+        Output:
+        wireless headphones
+
+        ### Current Interface:
+        {full_view_representation}
+
+        ### Focus Element Details:
+        {view_details}
+
+        ### Instruction:
+        Based on the above context, suggest appropriate text for the focus element. 
+        Provide only the raw text input without explanations, simbols or formatting, JUST TEXT. [/INST]
+        
+        OUTPUT:
+        """
+        )
+        
+        print("Prompt sent to Llama:")
+        print(prompt)
+
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": "Bearer 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",
+                "Content-Type": "application/json",
+            },
+            data=json.dumps({
+                "model": "meta-llama/llama-3.1-8b-instruct:free",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+            })
+        )
+
+        if response.ok:
+            print("Response received:")
+            print(response.json())  # Print the JSON response
+            print("Response text:")
+            print(response.json().get('choices')[0].get('message').get('content').strip())
+            
+        else:
+            print(f"Error: {response.status_code}")
+            print(response.text)
+
+        # Decode and return the response
+        return response.json().get('choices')[0].get('message').get('content').strip()
+
+
+
 

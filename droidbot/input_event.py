@@ -735,6 +735,7 @@ class SetTextEvent(UIEvent):
         touch_event = TouchEvent(x=x, y=y)
         touch_event.send(device)
         device.view_set_text(self.text)
+        print("Set text: %s" % self.text)
         return True
 
     def get_event_str(self, state):
