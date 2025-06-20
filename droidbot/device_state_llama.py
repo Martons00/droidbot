@@ -853,12 +853,18 @@ class DeviceState(object):
                 "Example 1:\n"
                 "[UI Representation]\n"
                 "<input id=0 text='Email address' bound_box=10,50,310,100>Enter email</input>\n"
+                "Possible Actions:\n"
+                "0: ...\n"
+                "1: ...\n"
                 "Output:\n"
                 "1"
                 "Example 2:\n"
                 "[UI Representation]\n"
                 "<input id=1 text='Search bar' bound_box=20,100,300,150>Search products...</input>\n"
                 "<button id=2 text='Search' bound_box=320,100,620,150></button>\n"
+                "Possible Actions:\n"
+                "0: ...\n"
+                "1: ...\n"
                 "Output:\n"
                 "0"
                 "UI Snapshot:\n"
@@ -894,6 +900,9 @@ class DeviceState(object):
         if response.isdigit():
             response = int(response)
             if 0 <= response < len(possible_actions):
+                last_actions.append(possible_actions[response])
+                if len(last_actions) > 10:
+                    last_actions.pop(0)
                 return possible_actions[response]
             else:
                 print(f"Error: Response index {response} out of range for possible actions.")
