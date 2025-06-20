@@ -13,6 +13,8 @@ from huggingface_hub import login
 import torch
 
 solo_text = False
+choice_LLM = False
+last_actions = []
 
 #droidbot -a C:\Users\juve2\StudioProjects\PassAndroid\android\build\intermediates\apk\noMapsNoAnalyticsForFDroid\debug\PassAndroid-3.7.3-noMaps-noAnalytics-forFDroid-debug.apk -o output-pass-llama -is_emulator -accessibility_auto -timeout 10800
 #droidbot -a C:\Users\juve2\StudioProjects\Omni-Notes\omniNotes\build\intermediates\apk\alpha\debug\OmniNotes-alphaDebug-6.4.0.apk  -o output-note-llama -is_emulator -accessibility_auto -timeout 10800
@@ -537,6 +539,8 @@ class DeviceState(object):
             possible_events = [event]
             print("Text input event is available")
             print("Possible events: ", possible_events)
+        if choice_LLM:
+            possible_events = self.ask_choice_llama(view=self.views[0], full_view_representation=self.text_representation[0], possible_actions=possible_events)
         self.possible_events = possible_events
         return [] + possible_events
     
@@ -808,6 +812,94 @@ class DeviceState(object):
             return None
         # Decode and return the response
         return response.strip()
+    
+    def ask_choice_llama(self,view, maxl=200, temp=0.7, full_view_representation=None,possible_actions=None):
+        rappresentation = ""
+        for line in full_view_representation.split('\n'):
+            type = line.split('<')[1].split(' ')[0]
+            line = line.split('>')[1].split('<')[0]
+            if len(line) > 0:
+                rappresentation += f"<{type}>" + line + "</" + type + ">\n"
+        full_view_representation = rappresentation
+        # Generate a brief description of the current element based on available attributes
+        view_text = self.__safe_dict_get(view, 'text', default='').strip()
+        content_description = self.__safe_dict_get(view, 'content_description', default='').strip()
+        view_class = self.__safe_dict_get(view, 'class', default='').split('.')[-1]
+
+        # Build a readable summary for the current view
+        view_details = (
+            f"Current Element:\n"
+            f"  - Class: {view_class}\n"
+            f"  - Text: {view_text if view_text else 'N/A'}\n"
+            f"  - Description: {content_description if content_description else 'N/A'}\n"
+        )
+        
+        # If no possible actions are provided, return None
+        view_possible_actions = None
+        if possible_actions:
+            # Enumerate possible actions with an index
+            view_possible_actions = ""
+            for idx, action in enumerate(possible_actions):
+                view_possible_actions += f"{idx}: {action}\n"
+
+        # Construct a structured prompt that incorporates both the global UI representation
+        # and the details of the active view
+        prompt = (
+                f"<s>[INST] <<SYS>>"
+                "You are an assistant that generates only a realistic, context-appropriate text input for a UI element. "
+                "Respond with a single action to take, no explanations, no formatting, no extra symbols."
+                "<</SYS>>\n\n"
+                "### Few-Shot Examples:\n\n"
+                "Example 1:\n"
+                "[UI Representation]\n"
+                "<input id=0 text='Email address' bound_box=10,50,310,100>Enter email</input>\n"
+                "Output:\n"
+                "1"
+                "Example 2:\n"
+                "[UI Representation]\n"
+                "<input id=1 text='Search bar' bound_box=20,100,300,150>Search products...</input>\n"
+                "<button id=2 text='Search' bound_box=320,100,620,150></button>\n"
+                "Output:\n"
+                "0"
+                "UI Snapshot:\n"
+                f"{full_view_representation}\n\n"
+                "Focused Element Details:\n"
+                f"{view_details}\n\n"
+                "Possible Actions:\n"
+                f"{view_possible_actions}\n"
+                "History of Actions:\n"
+                f"{' '.join(f'- {action}' for action in last_actions)}\n"
+                "Now, based on the UI Snapshot, Focused Element Details, possible actions and History of Actions, provide only the appropriate index action."
+                "[/INST]\n"
+                "OUTPUT: "
+            )
+
+        
+        print("Prompt sent to Llama:")
+        print(prompt)
+        
+        response = ask_llama_local(prompt=prompt, temp=temp)
+        response = response.split('OUTPUT:')[1].strip().replace('\n', ' ')
+        if len(response) > 15:
+            response = response[:15]
+        if response:
+            print("Response received:")
+            print(response)
+            print("Response text:")
+            print(response.strip())
+        else:
+            print("Error: No response received from Llama.")
+            return None
+        # Decode and return the response
+        if response.isdigit():
+            response = int(response)
+            if 0 <= response < len(possible_actions):
+                return possible_actions[response]
+            else:
+                print(f"Error: Response index {response} out of range for possible actions.")
+                return None
+        else:
+            print(f"Error: Response '{response}' is not a valid index.")
 
 def ask_llama_API(self,view, maxl=200, temp=0.7, full_view_representation=None):
 
