@@ -12,7 +12,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from huggingface_hub import login
 import torch
 
-solo_text = False
+solo_text = True
 choice_LLM = False
 last_actions = []
 
@@ -519,6 +519,14 @@ class DeviceState(object):
                 print("text_to_set: ", text_to_set)
                 event = SetTextEvent(view=self.views[view_id], text=text_to_set)
                 #text_to_set = "HelloWorld"  # TODO: replace with actual text generation
+                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
                 possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
                 touch_exclude_view_ids.add(view_id)
                 # TODO figure out what event can be sent to editable views

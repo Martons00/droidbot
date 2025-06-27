@@ -5,7 +5,7 @@ import os
 from .utils import md5
 from .input_event import TouchEvent, LongTouchEvent, ScrollEvent, SetTextEvent, KeyEvent
 
-solo_text = False
+solo_text = True
 
 
 class DeviceState(object):
@@ -453,6 +453,13 @@ class DeviceState(object):
                 if solo_text:
                     text = True
                 event = SetTextEvent(view=self.views[view_id], text="Hello World")
+                possible_events.append(SetTextEvent(view=self.views[view_id], text="Hello World"))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text="Hello World"))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text="Hello World"))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text="Hello World"))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text="Hello World"))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text="Hello World"))
+                possible_events.append(SetTextEvent(view=self.views[view_id], text="Hello World"))
                 possible_events.append(SetTextEvent(view=self.views[view_id], text="Hello World"))
                 touch_exclude_view_ids.add(view_id)
                 # TODO figure out what event can be sent to editable views

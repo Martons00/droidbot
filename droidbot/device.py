@@ -18,7 +18,7 @@ from .intent import Intent
 
 DEFAULT_NUM = '1234567890'
 DEFAULT_CONTENT = 'Hello world!'
-LLAMA = True
+LLAMA = False
 
 
 class Device(object):
