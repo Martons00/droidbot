@@ -516,17 +516,9 @@ class DeviceState(object):
                     text = True
                 full_view_representation = self.text_representation[0]
                 text_to_set = self.ask_llama(view=self.views[view_id], full_view_representation=full_view_representation)
-                print("text_to_set: ", text_to_set)
+                print("text_to_set by llama: ", text_to_set)
                 event = SetTextEvent(view=self.views[view_id], text=text_to_set)
                 #text_to_set = "HelloWorld"  # TODO: replace with actual text generation
-                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
-                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
-                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
-                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
-                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
-                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
-                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
-                possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
                 possible_events.append(SetTextEvent(view=self.views[view_id], text=text_to_set))
                 touch_exclude_view_ids.add(view_id)
                 # TODO figure out what event can be sent to editable views

@@ -1,0 +1,96 @@
+Prompt sent to Llama:
+<s>[INST] <<SYS>>You are an assistant that generates only a realistic, context-appropriate text input for a UI element. Respond with a single word of plain text, no explanations, no formatting, no extra symbols.<</SYS>>
+
+### Few-Shot Examples:
+
+Example 1:
+[UI Representation]
+<input id=0 text='Email address' bound_box=10,50,310,100>Enter email</input>
+Output:
+john.doe@example.com
+
+Example 2:
+[UI Representation]
+<input id=1 text='Search bar' bound_box=20,100,300,150>Search products...</input>
+<button id=2 text='Search' bound_box=320,100,620,150></button>
+Output:
+wireless headphones
+
+UI Snapshot:
+<p>PassAndroid</p>
+<input>Humanoid</input>
+<button>edit location</button>
+<button>edit time</button>
+<button>ADD HEADER IMAGE</button>
+<button>ADD FRONT FIELD</button>
+<button>ADD BARCODE</button>
+<input>Humanoid</input>
+<input>value</input>
+<input>label</input>
+<input>value</input>
+<button>ADD BACK FIELD</button>
+<button>ADD LOGO IMAGE</button>
+<button>ADD FOOTER IMAGE</button>
+
+
+Focused Element Details:
+Current Element:
+  - Class: EditText
+  - Text: value
+  - Description: N/A
+
+
+Now, based on the UI Snapshot and Focused Element Details, provide only the appropriate text for the focused element.[/INST]
+OUTPUT:
+Lughezza input 318
+maxl:  323
+Response received:
+value Input Typ
+Response text:
+value Input Typ
+text_to_set:  value Input Typ
+
+
+Prompt sent to Llama:
+<s>[INST] <<SYS>>You are an assistant that generates only a realistic, context-appropriate text input for a UI element. Respond with a single word of plain text, no explanations, no formatting, no extra symbols.<</SYS>>
+
+### Few-Shot Examples:
+
+Example 1:
+[UI Representation]
+<input id=0 text='Email address' bound_box=10,50,310,100>Enter email</input>
+Output:
+john.doe@example.com
+
+Example 2:
+[UI Representation]
+<input id=1 text='Search bar' bound_box=20,100,300,150>Search products...</input>
+<button id=2 text='Search' bound_box=320,100,620,150></button>
+Output:
+wireless headphones
+
+UI Snapshot:
+<p>K-9 Mail</p>
+<input>Laura Lee</input>
+<button>Email address</button>
+<button>Back</button>
+<button>Next</button>
+
+
+Focused Element Details:
+Current Element:
+  - Class: EditText
+  - Text: Laura Lee
+  - Description: N/A
+
+
+Now, based on the UI Snapshot and Focused Element Details, provide only the appropriate text for the focused element.[/INST]
+OUTPUT:
+Lughezza input 249
+maxl:  254
+Response received:
+Laura Lee
+Response text:
+Laura Lee
+text_to_set by llama:  Laura Lee
+Text input event is available

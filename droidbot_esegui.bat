@@ -9,3 +9,7 @@ REM Eseguo DroidBot sul terzo APK
 droidbot -a "C:\Users\juve2\StudioProjects\thunderbird-android\app-k9mail\build\outputs\apk\foss\debug\app-k9mail-foss-debug.apk" -o ../output_project/droidbot_base/output-tfa -keep_app  -is_emulator -accessibility_auto -timeout 7200
 
 PAUSE
+
+ droidbot -a "C:\Users\juve2\StudioProjects\PassAndroid\android\build\intermediates\apk\noMapsNoAnalyticsForFDroid\debug\PassAndroid-3.7.3-noMaps-noAnalytics-forFDroid-debug.apk" -o ../output_project/humanoid_llama/output-pass -keep_app  -is_emulator -accessibility_auto -timeout 7200 -humanoid 127.0.0.1:50405
+ droidbot -a "C:\Users\juve2\StudioProjects\Omni-Notes\omniNotes\build\intermediates\apk\alpha\debug\OmniNotes-alphaDebug-6.4.0.apk" -o ../output_project/humanoid_llama/output-note -keep_app  -is_emulator -accessibility_auto -timeout 7200 -humanoid 127.0.0.1:50405
+ droidbot -a "C:\Users\juve2\StudioProjects\thunderbird-android\app-k9mail\build\outputs\apk\foss\debug\app-k9mail-foss-debug.apk" -o ../output_project/humanoid_llama/output-tfa -keep_app  -is_emulator -accessibility_auto -timeout 7200 -humanoid 127.0.0.1:50405
