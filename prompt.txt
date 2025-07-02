@@ -94,3 +94,110 @@ Response text:
 Laura Lee
 text_to_set by llama:  Laura Lee
 Text input event is available
+
+
+Prompt sent to Llama:
+<s>[INST] <<SYS>>You are an assistant that generates only a realistic, context-appropriate text input for a UI element. Respond with a single action to take, no explanations, no formatting, no extra symbols.<</SYS>>
+
+### Few-Shot Examples:
+
+Example 1:
+[UI Representation]
+<input id=0 text='Email address' bound_box=10,50,310,100>Enter email</input>
+Possible Actions:
+0: event_type=touch, desc='Show Calendar List and Settings drawer', resource_id=None, class=android.widget.ImageButton, bounds=[[11, 147], [165, 301]]1: event_type=touch, desc='July', resource_id=com.google.android.calendar:id/date_picker_button, class=android.widget.LinearLayout, bounds=[[166, 147], [650, 301]]2: event_type=touch, desc='Search', resource_id=com.google.android.calendar:id/action_search, class=android.widget.Button, bounds=[[661, 158], [793, 290]]3: event_type=touch, desc='Jump to Today', resource_id=com.google.android.calendar:id/action_today, class=android.widget.Button, bounds=[[793, 158], [925, 290]]Output:
+1UI Snapshot:
+<p>Notes</p>
+<button>◻ Hello World</button>
+<button>Updated: 7 days ago</button>
+<button>◻ New item ### U</button>
+<button>Updated: 3 days ago</button>
+<button>a Passbook is shared with you</button>
+<button>Updated: 5 days ago</button>
+<button>a Passbook is shared with you</button>
+<button>Updated: 5 days ago</button>
+<button>a Passbook is shared with you</button>
+<button>Updated: 3 days ago</button>
+<button>Hello World</button>
+<button>Updated: 7 days ago</button>
+<button>Hello World</button>
+
+
+Focused Element Details:
+Current Element:
+  - Class: FrameLayout
+  - Text: N/A
+  - Description: N/A
+
+
+Possible Actions:
+0: event_type=touch, desc='drawer open', resource_id=None, class=android.widget.ImageButton, bounds=[[0, 136], [154, 290]]
+1: event_type=touch, desc='Search', resource_id=it.feio.android.omninotes.alpha:id/menu_search, class=android.widget.Button, bounds=[[705, 147], [837, 279]] 
+2: event_type=touch, desc='Sort', resource_id=it.feio.android.omninotes.alpha:id/menu_sort, class=android.widget.Button, bounds=[[837, 147], [969, 279]]     
+3: event_type=touch, desc='More options', resource_id=None, class=android.widget.ImageView, bounds=[[969, 147], [1080, 279]]
+4: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 312], [1058, 593]]     
+5: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 612], [1058, 893]]     
+6: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 912], [1058, 1193]]    
+7: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 1212], [1058, 1493]]   
+8: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 1512], [1058, 1793]]   
+9: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 1812], [1058, 2093]]   
+10: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 2112], [1058, 2274]]  
+11: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/fab_expand_menu_button, class=android.widget.ImageButton, bounds=[[856, 2049], [1058, 2252]]
+12: event_type=scroll, desc='None', resource_id=it.feio.android.omninotes.alpha:id/list, class=androidx.recyclerview.widget.RecyclerView, bounds=[[0, 290], [1080, 2274]]
+13: event_type=scroll, desc='None', resource_id=it.feio.android.omninotes.alpha:id/list, class=androidx.recyclerview.widget.RecyclerView, bounds=[[0, 290], [1080, 2274]]
+14: event_type=scroll, desc='None', resource_id=it.feio.android.omninotes.alpha:id/list, class=androidx.recyclerview.widget.RecyclerView, bounds=[[0, 290], [1080, 2274]]
+15: event_type=scroll, desc='None', resource_id=it.feio.android.omninotes.alpha:id/list, class=androidx.recyclerview.widget.RecyclerView, bounds=[[0, 290], [1080, 2274]]
+16: event_type=long_touch, desc='Sort', resource_id=it.feio.android.omninotes.alpha:id/menu_sort, class=android.widget.Button, bounds=[[837, 147], [969, 279]]
+17: event_type=long_touch, desc='More options', resource_id=None, class=android.widget.ImageView, bounds=[[969, 147], [1080, 279]]
+18: event_type=long_touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 312], [1058, 593]]
+19: event_type=long_touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 612], [1058, 893]]
+20: event_type=long_touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 912], [1058, 1193]]
+21: event_type=long_touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 1212], [1058, 1493]]
+22: event_type=long_touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 1512], [1058, 1793]]
+23: event_type=long_touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 1812], [1058, 2093]]
+24: event_type=long_touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/root, class=android.widget.FrameLayout, bounds=[[22, 2112], [1058, 2274]]
+25: event_type=long_touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/fab_expand_menu_button, class=android.widget.ImageButton, bounds=[[856, 2049], [1058, 2252]]
+26: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/crouton_handle, class=android.widget.FrameLayout, bounds=[[0, 136], [1080, 290]]
+27: event_type=touch, desc='None', resource_id=None, class=android.widget.TextView, bounds=[[198, 176], [346, 250]]
+28: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/expanded_image, class=android.widget.ImageView, bounds=[[0, 290], [1080, 2274]]
+29: event_type=touch, desc='None', resource_id=None, class=android.widget.LinearLayout, bounds=[[0, 290], [1080, 2274]]
+30: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/category_marker, class=android.view.View, bounds=[[22, 312], [41, 587]]    
+31: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_title, class=android.widget.TextView, bounds=[[58, 331], [1014, 392]] 
+32: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_content, class=android.widget.TextView, bounds=[[58, 392], [1014, 527]]
+33: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_date, class=android.widget.TextView, bounds=[[58, 527], [334, 568]]   
+34: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/category_marker, class=android.view.View, bounds=[[22, 612], [41, 887]]    
+35: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_title, class=android.widget.TextView, bounds=[[58, 631], [1014, 692]] 
+36: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_content, class=android.widget.TextView, bounds=[[58, 692], [1014, 827]]
+37: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_date, class=android.widget.TextView, bounds=[[58, 827], [334, 868]]   
+38: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/category_marker, class=android.view.View, bounds=[[22, 912], [41, 1187]]   
+39: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_title, class=android.widget.TextView, bounds=[[58, 931], [739, 992]]  
+40: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_date, class=android.widget.TextView, bounds=[[58, 1127], [334, 1168]] 
+41: event_type=touch, desc='note reminder symbol', resource_id=it.feio.android.omninotes.alpha:id/alarmIcon, class=android.widget.ImageView, bounds=[[375, 1127], [416, 1168]]
+42: event_type=touch, desc='note thumbnail', resource_id=it.feio.android.omninotes.alpha:id/attachmentThumbnail, class=android.widget.ImageView, bounds=[[783, 912], [1058, 1187]]
+43: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/category_marker, class=android.view.View, bounds=[[22, 1212], [41, 1487]]  
+44: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_title, class=android.widget.TextView, bounds=[[58, 1231], [739, 1292]]
+45: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_date, class=android.widget.TextView, bounds=[[58, 1427], [334, 1468]] 
+46: event_type=touch, desc='note thumbnail', resource_id=it.feio.android.omninotes.alpha:id/attachmentThumbnail, class=android.widget.ImageView, bounds=[[783, 1212], [1058, 1487]]
+47: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/category_marker, class=android.view.View, bounds=[[22, 1512], [41, 1787]]  
+48: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_title, class=android.widget.TextView, bounds=[[58, 1531], [739, 1592]]
+49: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_date, class=android.widget.TextView, bounds=[[58, 1727], [334, 1768]] 
+50: event_type=touch, desc='note thumbnail', resource_id=it.feio.android.omninotes.alpha:id/attachmentThumbnail, class=android.widget.ImageView, bounds=[[783, 1512], [1058, 1787]]
+51: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/category_marker, class=android.view.View, bounds=[[22, 1812], [41, 2087]]  
+52: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_title, class=android.widget.TextView, bounds=[[58, 1831], [1014, 1892]]
+53: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_content, class=android.widget.TextView, bounds=[[58, 1892], [1014, 2027]]
+54: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_date, class=android.widget.TextView, bounds=[[58, 2027], [334, 2068]] 
+55: event_type=touch, desc='note reminder symbol', resource_id=it.feio.android.omninotes.alpha:id/alarmIcon, class=android.widget.ImageView, bounds=[[375, 2027], [416, 2068]]
+56: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/category_marker, class=android.view.View, bounds=[[22, 2112], [41, 2274]]  
+57: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_title, class=android.widget.TextView, bounds=[[58, 2131], [1014, 2192]]
+58: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/note_content, class=android.widget.TextView, bounds=[[58, 2192], [1014, 2274]]
+59: event_type=touch, desc='None', resource_id=it.feio.android.omninotes.alpha:id/snackbar_placeholder, class=android.view.ViewGroup, bounds=[[0, 1724], [1080, 2274]]
+60: event_type=touch, desc='None', resource_id=None, class=android.view.View, bounds=[[0, 290], [1080, 301]]
+
+History of Actions:
+
+Now, based on the UI Snapshot, Focused Element Details, possible actions and History of Actions, provide only the appropriate index action.[/INST]
+OUTPUT:
+Lughezza input 3311
+maxl:  3316
+Response received:
+0
